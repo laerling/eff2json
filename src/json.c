@@ -46,14 +46,14 @@ json_val_new_noarg(json_val_new_null, Null)
 
 // object
 
-struct json_obj_elem {
+struct json_obj_kv {
     char* key;
     struct json_val* val;
-    struct json_obj_elem* next;
+    struct json_obj_kv* next;
 };
 
 struct json_obj {
-    struct json_obj_elem* first;
+    struct json_obj_kv* first;
 };
 
 struct json_obj* json_obj_new() {
@@ -65,8 +65,8 @@ struct json_obj* json_obj_new() {
 void json_obj_set(struct json_obj* o, char* key, struct json_val* v) {
 
     // seek and update
-    struct json_obj_elem* last = NULL;
-    for(struct json_obj_elem* e = o->first; e != NULL; e = e->next) {
+    struct json_obj_kv* last = NULL;
+    for(struct json_obj_kv* e = o->first; e != NULL; e = e->next) {
 
         // found the key, so just update the value and we're done
         if(strcmp(e->key, key) == 0) {
@@ -78,7 +78,7 @@ void json_obj_set(struct json_obj* o, char* key, struct json_val* v) {
     }
 
     // no update happened, so we need to append the new key-value pair
-    struct json_obj_elem* new = malloc(sizeof(struct json_obj_elem));
+    struct json_obj_kv* new = malloc(sizeof(struct json_obj_kv));
     new->key = key;
     new->val = v;
     new->next = NULL; // this is the new end
@@ -91,7 +91,7 @@ void json_obj_set(struct json_obj* o, char* key, struct json_val* v) {
 }
 
 int json_obj_haskey(struct json_obj* o, char* key) {
-    for(struct json_obj_elem* e = o->first; e != NULL; e = e->next) {
+    for(struct json_obj_kv* e = o->first; e != NULL; e = e->next) {
         if(strcmp(e->key, key) == 0)
             return 1;
     }
@@ -99,20 +99,20 @@ int json_obj_haskey(struct json_obj* o, char* key) {
 }
 
 // forward declaration for json_obj_remove
-void json_obj_elem_free(struct json_obj_elem* e);
+void json_obj_kv_free(struct json_obj_kv* e);
 
 void json_obj_remove(struct json_obj* o, char* key) {
-    struct json_obj_elem* last = NULL;
-    for(struct json_obj_elem* e = o->first; e != NULL; e = e->next) {
+    struct json_obj_kv* last = NULL;
+    for(struct json_obj_kv* e = o->first; e != NULL; e = e->next) {
         if(strcmp(e->key, key) == 0) {
             // relink (e->next might be NULL and that's fine)
             if(last == NULL) {
-                // this is the first element of the key-value linked list
+                // this is the first key-value pair in the linked list
                 o->first = e->next;
             } else {
                 last->next = e->next;
             }
-            json_obj_elem_free(e);
+            json_obj_kv_free(e);
             return;
         }
         last = e;
@@ -221,14 +221,14 @@ void json_val_free(struct json_val* v) {
 
 void json_obj_free(struct json_obj* o) {
     if(o->first != NULL)
-        json_obj_elem_free(o->first);
+        json_obj_kv_free(o->first);
     free(o);
 }
 
-void json_obj_elem_free(struct json_obj_elem* e) {
+void json_obj_kv_free(struct json_obj_kv* e) {
     // Keys are managed by the caller and thus don't have to be freed.
     if(e->next != NULL)
-        json_obj_elem_free(e->next);
+        json_obj_kv_free(e->next);
     json_val_free(e->val);
     free(e);
 }
@@ -281,10 +281,10 @@ int json_obj_equal(struct json_obj* a, struct json_obj* b) {
         return 1;
     // Key-value pairs might be in different order, so we have to compare each
     // one from a with each one from b.
-    for(struct json_obj_elem* ae = a->first; ae != NULL; ae = ae->next) {
+    for(struct json_obj_kv* ae = a->first; ae != NULL; ae = ae->next) {
         // look for matching key-value pair in b
         int found = 0;
-        for(struct json_obj_elem* be = b->first; be != NULL; be = be->next) {
+        for(struct json_obj_kv* be = b->first; be != NULL; be = be->next) {
             if(strcmp(ae->key, be->key) == 0 && json_val_equal(ae->val, be->val)) {
                 found = 1;
                 break;
@@ -349,7 +349,7 @@ void json_val_print(struct json_val* v, FILE* f) {
 void json_obj_print(struct json_obj* o, FILE* f) {
     fprintf(f, "{");
     int first_elem = 1;
-    struct json_obj_elem* e = o->first;
+    struct json_obj_kv* e = o->first;
     while(e != NULL) {
         if(first_elem) {
             first_elem = 0;
