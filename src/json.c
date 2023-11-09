@@ -196,26 +196,27 @@ void json_obj_free(struct json_obj* o);
 void json_arr_free(struct json_arr* a);
 
 void json_val_free(struct json_val* v) {
-    // array and object are the only types that need to be recursively free'd
+    // Array and object are the only types that need to be recursively free'd.
+    // The respective pointer is set to NULL to prevent access to free'd memory.
     switch(v->type) {
         case(Array):
             json_arr_free(v->val.a);
-            return;
+            v->val.a = NULL;
+            break;
         case(Object):
             json_obj_free(v->val.o);
-            return;
+            v->val.o = NULL;
+            break;
+        case(String):
+            // We consider strings (char*) to be owned and free'd by the
+            // caller. After all, we don't know whether they're on the stack or
+            // the heap or static. However, we still set the pointer to NULL.
+            v->val.s = NULL;
+            break;
         default:
-            return;
+            break;
     }
-}
-
-void json_obj_elem_free(struct json_obj_elem* e) {
-    // Keys don't have to be free'd, because they're char pointers provided
-    // (and thus managed) by the user.
-    if(e->next != NULL)
-        json_obj_elem_free(e->next);
-    json_val_free(e->val);
-    free(e);
+    free(v);
 }
 
 void json_obj_free(struct json_obj* o) {
@@ -224,9 +225,10 @@ void json_obj_free(struct json_obj* o) {
     free(o);
 }
 
-void json_arr_elem_free(struct json_arr_elem* e) {
+void json_obj_elem_free(struct json_obj_elem* e) {
+    // Keys are managed by the caller and thus don't have to be freed.
     if(e->next != NULL)
-        json_arr_elem_free(e->next);
+        json_obj_elem_free(e->next);
     json_val_free(e->val);
     free(e);
 }
@@ -235,6 +237,13 @@ void json_arr_free(struct json_arr* a) {
     if(a->first != NULL)
         json_arr_elem_free(a->first);
     free(a);
+}
+
+void json_arr_elem_free(struct json_arr_elem* e) {
+    if(e->next != NULL)
+        json_arr_elem_free(e->next);
+    json_val_free(e->val);
+    free(e);
 }
 
 
