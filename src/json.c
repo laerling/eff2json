@@ -35,13 +35,13 @@ struct json_val {
         return jv; \
     }
 
-json_val_new(json_val_new_integer, int, Integer, i);
-json_val_new(json_val_new_string, char*, String, s);
-json_val_new(json_val_new_array, struct json_arr*, Array, a);
-json_val_new(json_val_new_object, struct json_obj*, Object, o);
-json_val_new_noarg(json_val_new_false, False);
-json_val_new_noarg(json_val_new_true, True);
-json_val_new_noarg(json_val_new_null, Null);
+json_val_new(json_val_new_integer, int, Integer, i)
+json_val_new(json_val_new_string, char*, String, s)
+json_val_new(json_val_new_array, struct json_arr*, Array, a)
+json_val_new(json_val_new_object, struct json_obj*, Object, o)
+json_val_new_noarg(json_val_new_false, False)
+json_val_new_noarg(json_val_new_true, True)
+json_val_new_noarg(json_val_new_null, Null)
 
 
 // object
