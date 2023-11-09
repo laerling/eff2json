@@ -1,3 +1,7 @@
+#ifndef EFF2JSON_JSON_H
+#define EFF2JSON_JSON_H
+
+
 #include <stdio.h>
 
 
@@ -51,3 +55,6 @@ void json_arr_remove(struct json_arr* a, struct json_val* v);
 void json_arr_print(struct json_arr* a, FILE* f);
 
 void json_arr_free(struct json_arr* a);
+
+
+#endif
