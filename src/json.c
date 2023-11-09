@@ -270,7 +270,7 @@ int json_val_equal(struct json_val* a, struct json_val* b) {
         return strcmp(a->val.s, b->val.s) == 0;
     if(a->type == Array)
         return json_arr_equal(a->val.a, b->val.a);
-    if(a->type == Array)
+    if(a->type == Object)
         return json_obj_equal(a->val.o, b->val.o);
     // other cases are unknown
     return 0;
