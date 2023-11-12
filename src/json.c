@@ -112,6 +112,10 @@ void json_obj_remove(struct json_obj* o, char* key) {
             } else {
                 last->next = e->next;
             }
+            // json_obj_kv_free frees e->next, but since we linked e->next to
+            // last->next, we don't want it to be freed. So set e->next to
+            // NULL, which is as if this were the last element of the list.
+            e->next = NULL;
             json_obj_kv_free(e);
             return;
         }
