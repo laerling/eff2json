@@ -302,14 +302,16 @@ int json_obj_equal(struct json_obj* a, struct json_obj* b) {
 
 int json_arr_equal(struct json_arr* a, struct json_arr* b) {
     struct json_arr_elem* be = b->first;
-    for(struct json_arr_elem* ae = a->first; ae != NULL; ae = ae->next) {
-        if(json_val_equal(ae->val, be->val) != 0)
+    struct json_arr_elem* ae = a->first;
+    while(ae != NULL && be != NULL) {
+        if(!json_val_equal(ae->val, be->val))
             return 0;
+        ae = ae->next;
         be = be->next;
     }
 
-    // we're at the end of a, but is it also the end of b?
-    if(be != NULL)
+    // do both arrays end in the same place?
+    if(ae != NULL || be != NULL)
         return 0;
 
     // if we didn't return yet the arrays are equal
