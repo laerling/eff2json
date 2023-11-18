@@ -1,3 +1,10 @@
+// This preprocessor directive prevents this file from defining the main
+// function when we're in testing mode. The alternative is to leave out this
+// file from compilation when testing. That's how Makefile does it right now:
+// $(filter-out src/main.c, $(wildcard src/*))
+#ifndef EFF2JSON_TEST
+
+
 #include <stdio.h>
 #include "json.h"
 
@@ -61,3 +68,6 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+
+
+#endif
