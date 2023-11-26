@@ -8,42 +8,17 @@
 #include <stdio.h>
 #include "json.h"
 
-struct json_obj* json_demo() {
-    struct json_val* vs = json_val_new_string("bar");
-    struct json_val* vi = json_val_new_integer(42);
-    struct json_val* vn = json_val_new_null();
-    struct json_val* vf = json_val_new_false();
-    struct json_val* vt = json_val_new_true();
-    struct json_obj* voo = json_obj_new();
-    json_obj_set(voo, "foo", json_val_new_null());
-    struct json_val* vo = json_val_new_object(voo);
-    struct json_arr* vll = json_arr_new();
-    json_arr_append(vll, json_val_new_null());
-    struct json_val* vl = json_val_new_array(vll);
-    struct json_obj* o = json_obj_new();
-    json_obj_set(o, "string", vs);
-    json_obj_set(o, "integer", vi);
-    json_obj_set(o, "null", vn);
-    json_obj_set(o, "false", vf);
-    json_obj_set(o, "true", vt);
-    json_obj_set(o, "object", vo);
-    json_obj_set(o, "array", vl);
+struct json_obj* eff2json(const char* filename) {
+    struct json_obj* jo_file = json_obj_new();
 
-    json_obj_print(o, stdout);
-    printf("\n");
-    return o;
-}
-
-char* eff2json(const char* filename) {
+    // describe the file itself
+    struct json_val* js_filename = json_val_new_string((char*)filename);
+    json_obj_set(jo_file, "filename", js_filename);
 
     // detect file format
     // TODO
 
-    // TEMP: JSON demo
-    struct json_obj* o = json_demo();
-    json_obj_print(o, stdout);
-    json_obj_free(o);
-    printf("\n");
+    return jo_file;
 }
 
 int main(int argc, char* argv[]) {
@@ -54,19 +29,24 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // make global JSON object
-    struct json_obj* top_json = json_obj_new();
+    // make top JSON object
+    struct json_obj* jo_top = json_obj_new();
 
-    // check every file
+    // make array of files
+    struct json_arr* ja_files = json_arr_new();
     for(int i=1;i<argc;i++) {
-        char* file_json = eff2json(argv[i]);
-        // TODO add to global JSON object
+        struct json_obj* jo_file = eff2json(argv[i]);
+        struct json_val* jv_file = json_val_new_object(jo_file);
+        json_arr_append(ja_files, jv_file);
     }
 
-    // print global JSON object
-    // TODO
+    // add array of files to top JSON object
+    struct json_val* jv_files = json_val_new_array(ja_files);
+    json_obj_set(jo_top, "files", jv_files);
 
-    return 0;
+    // print top JSON object
+    json_obj_print(jo_top, stdout);
+    printf("\n");
 }
 
 
