@@ -175,6 +175,13 @@ int json_arr_has(struct json_arr* a, struct json_val* v) {
     return 0;
 }
 
+unsigned int json_arr_length(struct json_arr* a) {
+    unsigned int length = 0;
+    for(struct json_arr_elem* e=a->first;e!=NULL;e=e->next)
+        length++;
+    return length;
+}
+
 // forward declaration for json_arr_remove
 void json_arr_elem_free(struct json_arr_elem* e);
 
@@ -972,6 +979,31 @@ int test_json_arr_has() {
     // test positive outcome
     if(!json_arr_has(a, v))
         fail("json_arr_has returns zero for non-empty array");
+
+    return 0;
+}
+
+int test_json_arr_length() {
+    struct json_arr* a = json_arr_new();
+    struct json_val* v = json_val_new_null();
+
+    // 0 elements
+    if(json_arr_length(a) != 0)
+        return 1;
+
+    // add first element
+    json_arr_append(a, v);
+
+    // 1 elements
+    if(json_arr_length(a) != 1)
+        return 1;
+
+    // add first element
+    json_arr_append(a, v);
+
+    // 2 elements
+    if(json_arr_length(a) != 2)
+        return 1;
 
     return 0;
 }

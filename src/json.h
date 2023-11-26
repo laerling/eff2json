@@ -50,6 +50,8 @@ void json_arr_append(struct json_arr* a, struct json_val* v);
 
 int json_arr_has(struct json_arr* a, struct json_val* v);
 
+unsigned int json_arr_length(struct json_arr* a);
+
 void json_arr_remove(struct json_arr* a, struct json_val* v);
 
 void json_arr_print(struct json_arr* a, FILE* f);

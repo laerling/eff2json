@@ -37,6 +37,7 @@ int main() {
     test(json_arr_equal)
     test(json_arr_append)
     test(json_arr_has)
+    test(json_arr_length)
     test(json_arr_remove)
     test(json_arr_print)
 

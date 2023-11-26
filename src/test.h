@@ -24,5 +24,6 @@ int test_json_arr_new();
 int test_json_arr_equal();
 int test_json_arr_append();
 int test_json_arr_has();
+int test_json_arr_length();
 int test_json_arr_remove();
 int test_json_arr_print();
